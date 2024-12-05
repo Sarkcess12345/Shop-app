@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Sale</title>
+    <style>
+        /* Basic styling for the webpage */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .receipt {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #totalSection {
+            margin-top: 20px;
+        }
+
+        #discountForm {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Shop!</h1>
+        <form id="saleForm">
+            <label for="itemName">Item Name:</label>
+            <input type="text" id="itemName" name="itemName" required><br>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" step="0.01" required><br>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required><br>
+
+            <button type="submit">Add Item</button>
+        </form>
+
+        <div id="receipt" class="receipt" style="display:none;">
+            <h2>Receipt</h2>
+            <ul id="itemList"></ul>
+            <div id="totalSection">
+                <p id="totalPrice"></p>
+            </div>
+        </div>
+
+        <div id="discountForm" style="display:none;">
+            <label for="discount">Apply Discount (%):</label>
+            <input type="number" id="discount" step="0.1"><br>
+            <button onclick="applyDiscount()">Apply Discount</button>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+        let total = 0;
+
+        document.getElementById("saleForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission to refresh the page
+
+            // Get input values
+            const itemName = document.getElementById("itemName").value;
+            const price = parseFloat(document.getElementById("price").value);
+            const quantity = parseInt(document.getElementById("quantity").value);
+
+            // Calculate total for this item and update the global total
+            const itemTotal = price * quantity;
+            total += itemTotal;
+
+            // Add item to the list
+            items.push({ itemName, price, quantity, itemTotal });
+
+            // Update the item list and total
+            updateReceipt();
+
+            // Clear the form inputs for the next entry
+            document.getElementById("saleForm").reset();
+        });
+
+        function updateReceipt() {
+            // Clear previous items from the list
+            const itemList = document.getElementById("itemList");
+            itemList.innerHTML = "";
+
+            // Add each item to the list
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${item.itemName} - $${item.price} x ${item.quantity} = $${item.itemTotal.toFixed(2)}`;
+                itemList.appendChild(li);
+            });
+
+            // Update the total price
+            document.getElementById("totalPrice").textContent = `Total: $${total.toFixed(2)}`;
+
+            // Show the receipt section if it was hidden
+            document.getElementById("receipt").style.display = "block";
+            document.getElementById("discountForm").style.display = "block";
+        }
+
+        function applyDiscount() {
+            // Get the discount percentage
+            const discountPercentage = parseFloat(document.getElementById("discount").value);
+
+            // Calculate the discount
+            const discountAmount = (total * discountPercentage) / 100;
+            const discountedTotal = total - discountAmount;
+
+            // Update the total with the discount applied
+            document.getElementById("totalPrice").textContent = `Discounted Total: $${discountedTotal.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
